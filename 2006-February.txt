@@ -1,0 +1,331 @@
+From jim.mccoy at gmail.com  Mon Feb  6 22:32:31 2006
+From: jim.mccoy at gmail.com (Jim McCoy)
+Date: Mon, 6 Feb 2006 13:32:31 -0800
+Subject: [Louie-users] on the plugins system...
+Message-ID: <f01e36880602061332y1c3d771ewee2dacce66945a03@mail.gmail.com>
+
+To recap for those who might be scanning the list archives, the plugin
+system prior to 1.1 had a minor problem in that if you called install_plugin
+multiple times the nested method weakrefs would croak.  There was a fix in
+1.1 and perhaps a tweak in 1.2 (I am not sure about the last bit) and
+current behavior seems to be that if you call install_plugin multiple times
+you will get a PluginTypeError.
+
+I am not sure I necessarily agree about raising an exception for multiple
+calls to install_plugin but I can see the logic behind the choice and it is
+easy enough to wrap the call to install_plugin in a try/except clause.
+While I was thinking about the reasoning behind the exception I started to
+consider the plugin issue a bit more and realized that there was an
+interesting set of wierdnesses lurking beneath the surface.  For someone who
+controls their app from top to bottom things are fairly clear on what to do,
+but what about the case where the coder is responding to signals from
+another module/framework?
+
+If I install, for example, the twisted plugin then the returns from my
+signal sends will be deferreds.  Simple enough. The wierdness arises if I am
+using louie in my app, I do not have the twisted plugin installed, and I
+import a package that also uses louie but which installs the twisted
+plugin.  Suddenly my signals that are passing around independantly of this
+other package start returning deferreds...
+
+I guess what I am leading towards is the question of whether or not the
+sender of the signal should define how that send() call returns rather than
+a global value (e.g. the list of installed plugins) so that no one gets
+caught unaware when processing the results of a louie.send()?  Perhaps
+installing a plugin should just make a send_with_deferred_return() available
+rather than forcing the wrapper on all calls?
+
+Regards,
+
+Jim
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/louie-users/attachments/20060206/16bcab7e/attachment.html>
+
+From ianb at colorstudy.com  Tue Feb  7 05:22:32 2006
+From: ianb at colorstudy.com (Ian Bicking)
+Date: Mon, 06 Feb 2006 22:22:32 -0600
+Subject: [Louie-users] on the plugins system...
+In-Reply-To: <f01e36880602061332y1c3d771ewee2dacce66945a03@mail.gmail.com>
+References: <f01e36880602061332y1c3d771ewee2dacce66945a03@mail.gmail.com>
+Message-ID: <43E82088.1010507@colorstudy.com>
+
+Funny there should be an email, I was just going to write an email. 
+About something entirely different, though.  But I still have an opinion...
+
+Jim McCoy wrote:
+> To recap for those who might be scanning the list archives, the plugin 
+> system prior to 1.1 had a minor problem in that if you called 
+> install_plugin multiple times the nested method weakrefs would croak.  
+> There was a fix in 1.1 and perhaps a tweak in 1.2 (I am not sure about 
+> the last bit) and current behavior seems to be that if you call 
+> install_plugin multiple times you will get a PluginTypeError.
+> 
+> I am not sure I necessarily agree about raising an exception for 
+> multiple calls to install_plugin but I can see the logic behind the 
+> choice and it is easy enough to wrap the call to install_plugin in a 
+> try/except clause.  While I was thinking about the reasoning behind the 
+> exception I started to consider the plugin issue a bit more and realized 
+> that there was an interesting set of wierdnesses lurking beneath the 
+> surface.  For someone who controls their app from top to bottom things 
+> are fairly clear on what to do, but what about the case where the coder 
+> is responding to signals from another module/framework?
+> 
+> If I install, for example, the twisted plugin then the returns from my 
+> signal sends will be deferreds.  Simple enough. The wierdness arises if 
+> I am using louie in my app, I do not have the twisted plugin installed, 
+> and I import a package that also uses louie but which installs the 
+> twisted plugin.  Suddenly my signals that are passing around 
+> independantly of this other package start returning deferreds...
+
+That would be horrible.  That would break synchronous code running in 
+Twisted in a thread.  Return values should never change like that.
+
+> I guess what I am leading towards is the question of whether or not the 
+> sender of the signal should define how that send() call returns rather 
+> than a global value (e.g. the list of installed plugins) so that no one 
+> gets caught unaware when processing the results of a louie.send()?  
+> Perhaps installing a plugin should just make a 
+> send_with_deferred_return() available rather than forcing the wrapper on 
+> all calls?
+
+That seems much more reasonable.
+
+-- 
+Ian Bicking  |  ianb at colorstudy.com  |  http://blog.ianbicking.org
+
+
+From ianb at colorstudy.com  Tue Feb  7 05:28:37 2006
+From: ianb at colorstudy.com (Ian Bicking)
+Date: Mon, 06 Feb 2006 22:28:37 -0600
+Subject: [Louie-users] PyDispatcher, subclassing, etc
+Message-ID: <43E821F5.4000000@colorstudy.com>
+
+So... it's unclear to me, but what exactly is the reason for Louie in 
+comparison to PyDispatcher?
+
+The other thing, a while back I asked about how to listen to signals on 
+classes, and inherit those in subclasses: 
+http://sourceforge.net/mailarchive/forum.php?thread_id=8383303&forum_id=34020
+
+Quick summary: I want to listen for signals from class A, and then when 
+class B inherits from A, I want that listener to automatically listen 
+for signals from B as well.
+
+Ultimately I figured out a way to do it, but since then I have found the 
+solution annoying, as it relies on cloning events when a subclassing 
+happens, and the exact time those events get cloned is very important, 
+and it's just not that good.  I could probably fix it some... but I'm 
+wondering if there's any fresh though on the matter?
+
+(There's also a suggestion of using generic functions as a form of event 
+handling, but I'll admit that still scares me a little)
+
+-- 
+Ian Bicking  |  ianb at colorstudy.com  |  http://blog.ianbicking.org
+
+
+From jim.mccoy at gmail.com  Tue Feb  7 06:51:41 2006
+From: jim.mccoy at gmail.com (Jim McCoy)
+Date: Mon, 6 Feb 2006 21:51:41 -0800
+Subject: Fwd: [Louie-users] PyDispatcher, subclassing, etc
+In-Reply-To: <f01e36880602062142t7fca36eepdab0631038798de7@mail.gmail.com>
+References: <43E821F5.4000000@colorstudy.com>
+	 <f01e36880602062142t7fca36eepdab0631038798de7@mail.gmail.com>
+Message-ID: <f01e36880602062151x7b09c53cv208713b51af9f8cc@mail.gmail.com>
+
+Forgot to send this to louie-users as well...
+
+---------- Forwarded message ----------
+From: Jim McCoy <jim.mccoy at gmail.com>
+Date: Feb 6, 2006 9:42 PM
+Subject: Re: [Louie-users] PyDispatcher, subclassing, etc
+To: Ian Bicking <ianb at colorstudy.com>
+
+
+
+On 2/6/06, Ian Bicking <ianb at colorstudy.com> wrote:
+>
+> So... it's unclear to me, but what exactly is the reason for Louie in
+> comparison to PyDispatcher?
+
+
+I can't speak for the authors, but I think one of the reasons was the name
+conflict between pydispatcher (which wanted to use the dispatch name) and
+pje's ruledispatch (which used the same name.)  Other than that I think it
+is mostly pydispatch with a few fixes and some preliminary wrappers for
+interfacing better with other event loops.
+
+The other thing, a while back I asked about how to listen to signals on
+> classes, and inherit those in subclasses:
+>
+> http://sourceforge.net/mailarchive/forum.php?thread_id=8383303&forum_id=34020
+>
+> Quick summary: I want to listen for signals from class A, and then when
+> class B inherits from A, I want that listener to automatically listen
+> for signals from B as well.
+> [...]
+>
+> (There's also a suggestion of using generic functions as a form of event
+> handling, but I'll admit that still scares me a little)
+
+
+As I was reading this I started thinking that ruledispatch would almost be
+tailor-made for such a problem, but now we run into the problem that people
+would try to drop louie in where they had been using pydispatch and the
+swtich on the module that claims the "dispatch" name would change on them
+and lead to all sorts of interesting exceptions and syntax errors :)
+
+Aside from this particular issue it does seem that ruledispatch and the
+generics wrappers seem somewhat ideal.  Efficient type and class/subclass
+checking, multiple triggers, and even the ability to set the signal dispatch
+based on some simple expression criteria in the connect() call.
+
+I have been looking for an excuse to play around with python generics, maybe
+this is the excuse I need...
+
+Jim
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/louie-users/attachments/20060206/bbc31baa/attachment.html>
+
+From pobrien at orbtech.com  Tue Feb  7 13:25:16 2006
+From: pobrien at orbtech.com (Patrick K. O'Brien)
+Date: Tue, 07 Feb 2006 06:25:16 -0600
+Subject: Fwd: [Louie-users] PyDispatcher, subclassing, etc
+In-Reply-To: <f01e36880602062151x7b09c53cv208713b51af9f8cc@mail.gmail.com>
+References: <43E821F5.4000000@colorstudy.com>	 <f01e36880602062142t7fca36eepdab0631038798de7@mail.gmail.com> <f01e36880602062151x7b09c53cv208713b51af9f8cc@mail.gmail.com>
+Message-ID: <43E891AC.4080407@orbtech.com>
+
+Jim McCoy wrote:
+> 
+> On 2/6/06, Ian Bicking <ianb at colorstudy.com> wrote:
+>> So... it's unclear to me, but what exactly is the reason for Louie in
+>> comparison to PyDispatcher?
+> 
+> 
+> I can't speak for the authors, but I think one of the reasons was the name
+> conflict between pydispatcher (which wanted to use the dispatch name) and
+> pje's ruledispatch (which used the same name.)  Other than that I think it
+> is mostly pydispatch with a few fixes and some preliminary wrappers for
+> interfacing better with other event loops.
+
+The name conflict was the main reason.  We solved this for Schevo by
+including pydispatcher in our Subversion repository.  But once we were
+using eggs that was a less appealing solution.  And others were
+complaining about the name clash.  So we seized upon the opportunity to
+rename it, move it to Subversion, make some of our plugin experiments
+available, use setuptools, pudge, etc.  Matt gets all the credit for this.
+
+Now that we've done it, I want Louie to be more widely used, of course.
+ But that doesn't mean there was any big problem with pydispatcher.
+There wasn't, and I still greatly appreciate all the work done by Mike
+Fletcher to get my original code hosted on SourceForge, fix obscure
+bugs, answer people's questions, etc.
+
+-- 
+Patrick K. O'Brien
+Orbtech       http://www.orbtech.com
+Schevo        http://www.schevo.org
+Louie         http://louie.berlios.de
+
+
+
+From mscott at springfieldtech.com  Tue Feb  7 15:49:08 2006
+From: mscott at springfieldtech.com (Matthew Scott)
+Date: Tue, 07 Feb 2006 08:49:08 -0600
+Subject: [Louie-users] PyDispatcher, subclassing, etc
+In-Reply-To: <43E821F5.4000000@colorstudy.com>
+References: <43E821F5.4000000@colorstudy.com>
+Message-ID: <43E8B364.8010008@springfieldtech.com>
+
+Ian Bicking wrote:
+> So... it's unclear to me, but what exactly is the reason for Louie in 
+> comparison to PyDispatcher?
+
+I'll let Pat O'Brien (the originator of the PyDispatcher recipe in the 
+cookbook) chime in with his two cents, but here is what inspired us to 
+branch from PyDispatcher, in rough order of importance:
+
+* Package name conflicts -- we were using both PyDispatcher and 
+RuleDispatch in Schevo.  Ultimately, we ended up embedding PyDispatcher 
+in the Schevo namespace.  The name "Louie" may be new but its roots 
+actually go back to that fork.
+
+* Naming -- we prefer short names when possible.  Louie was a nice 
+obscure reference to dispatching, is easy to type, and was not taken. 
+We further collapsed the namespace so one just has to use "import louie" 
+and then call "louie.whatever(...)" for the entire public API.
+
+* Plugins -- we ran into problems using PyDispatcher with PyQt, where it 
+would attempt to call receivers on dead QWidget instances.  It seemed 
+the best way to do this would be to start a plugin system of sorts. 
+Later, when I started working with the Nufox project, I found I needed 
+to create a plugin for Louie to work with Twisted.  Thus, the primitive 
+state of the current Louie plugin mechanism, which hasn't been extended 
+beyond the "works here" criteria.
+
+* easy_install -U Louie, and install_requires=['Louie>=1.0']  :)
+
+* SourceForge is notoriously slow.
+
+* Using CVS is more painful than more modern repository systems.
+
+* Code formatting -- the code originating from PyDispatcher was 
+reformatted to have better docstrings, consistent whitespace, and 
+four-space indentation.
+
+* We wanted to revive a project that had reached a plateau of sorts. 
+Because there are so many other bullet points described above, the most 
+efficient way to do so seemed to be to create a new project that was a 
+fork of PyDispatcher.
+
+
+-- 
+Matthew Scott
+Springfield Technology
+
+
+From mscott at springfieldtech.com  Tue Feb  7 16:05:43 2006
+From: mscott at springfieldtech.com (Matthew Scott)
+Date: Tue, 07 Feb 2006 09:05:43 -0600
+Subject: Fwd: [Louie-users] PyDispatcher, subclassing, etc
+In-Reply-To: <f01e36880602062151x7b09c53cv208713b51af9f8cc@mail.gmail.com>
+References: <43E821F5.4000000@colorstudy.com>	 <f01e36880602062142t7fca36eepdab0631038798de7@mail.gmail.com> <f01e36880602062151x7b09c53cv208713b51af9f8cc@mail.gmail.com>
+Message-ID: <43E8B747.4090006@springfieldtech.com>
+
+Jim McCoy wrote:
+> Aside from this particular issue it does seem that ruledispatch and the 
+> generics wrappers seem somewhat ideal.  Efficient type and 
+> class/subclass checking, multiple triggers, and even the ability to set 
+> the signal dispatch based on some simple expression criteria in the 
+> connect() call.
+> 
+> I have been looking for an excuse to play around with python generics, 
+> maybe this is the excuse I need...
+
+Personally, I love and use the RuleDispatch package.
+
+In some cases though, it seems easier to wrap my head around the 
+PyDispatcher/Louie way of doing things.
+
+Since there is interest in both, I would like to pose this question to 
+spark a thread of "where to go" with Louie:
+
+Would it make sense to make RuleDispatch a dependency of Louie?
+
+In this scenario, one would use Louie syntax as they're used to, and 
+Louie would translate that into appropriate use of RuleDispatch rather 
+than use its own dispatching mechanism.
+
+I'd be willing to give it a shot in the near future :)  I just don't 
+have the time to do so at this particular moment.
+
+This might give a fresh approach to Ian's question about a clean way to 
+listen from signals whose sender is a class or one of its subclasses.
+
+-- 
+Matthew Scott
+Springfield Technology
+
+

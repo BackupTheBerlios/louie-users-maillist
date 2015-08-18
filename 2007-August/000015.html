@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Louie-users] Objectifying dispatcher
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/louie-users/2007-August/index.html" >
+   <LINK REL="made" HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20%5BLouie-users%5D%20Objectifying%20dispatcher&In-Reply-To=%3Ce4f768c0708011037n24a03b27k6d200c6f529988f8%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Louie-users] Objectifying dispatcher</H1>
+    <B>Matthew Scott</B> 
+    <A HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20%5BLouie-users%5D%20Objectifying%20dispatcher&In-Reply-To=%3Ce4f768c0708011037n24a03b27k6d200c6f529988f8%40mail.gmail.com%3E"
+       TITLE="[Louie-users] Objectifying dispatcher">mscott at springfieldtech.com
+       </A><BR>
+    <I>Wed Aug  1 19:37:40 CEST 2007</I>
+    <P><UL>
+        
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#15">[ date ]</a>
+              <a href="thread.html#15">[ thread ]</a>
+              <a href="subject.html#15">[ subject ]</a>
+              <a href="author.html#15">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Sorry for the late reply.
+
+On 6/19/07, Bill Baxter &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/louie-users">wbaxter at gmail.com</A>&gt; wrote:
+&gt;<i> Someone on the wx.Python list recently pointed me to Louie -- I've taken a
+</I>&gt;<i> closer look at it now and the one thing that kind of bothers me is that it
+</I>&gt;<i> uses a central global dispatcher.
+</I>
+I can understand why that may concern you.
+
+
+&gt;<i> The thing I was looking for was an
+</I>&gt;<i> alternative to wx.lib.pubsub that doesn't pull in all of wx as a dependency.
+</I>&gt;<i>  But in some ways wx.lib.pubsub makes more sense to me.  There a publisher
+</I>&gt;<i> talks directly to a subscriber without a middle man.  If you want A to
+</I>&gt;<i> signal B, A creates a Publisher, and B can connect to A's Publisher.  Of
+</I>&gt;<i> course if you want to make a big global publisher and have everyone use it,
+</I>&gt;<i> you can do that too.  Louie seems to force the &quot;big global publisher&quot;
+</I>&gt;<i> paradigm on you.
+</I>
+Remember, Louie is ultimately based on
+<A HREF="http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056">http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056</A>
+and is basically a fancy + bug-fixed version of that recipe.
+
+Schevo has in the past used Louie for event dispatching for
+auto-updated PyQt GUIs, but I don't know of other uses in the wild
+(yet).
+
+
+&gt;<i>
+</I>&gt;<i> The stuff in louie.dispatcher is fairly compact, and looks like it could
+</I>&gt;<i> easily be encapsulated in a class if one wanted to.  I think all you need is
+</I>&gt;<i> to make these globals non-global:
+</I>&gt;<i>   connections = {}
+</I>&gt;<i>   senders = {}
+</I>&gt;<i>   senders_back = {}
+</I>&gt;<i>   plugins = []
+</I>&gt;<i> and put them in a Dispatcher class.  Is there any reason not to have such a
+</I>&gt;<i> class?  louie.dispatcher could still have the module level functions, they
+</I>&gt;<i> would just use an on-demand instantiated module-level instance of
+</I>&gt;<i> Dispatcher.
+</I>
++1 for that -- then you get the best of both worlds.  If you post a
+patch here we would be glad to review it and merge it in.
+
+
+&gt;<i> Or maybe someone can convince me that my concerns are unfounded and I should
+</I>&gt;<i> just go with the one big happy global dispatcher.
+</I>
+Questions: How many dispatchers do you envision using?  What makes it
+a necessity to segregate them?
+
+
+-- 
+Matthew R. Scott
+If my mail is terse, see <A HREF="http://five.sentenc.es/">http://five.sentenc.es/</A>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#15">[ date ]</a>
+              <a href="thread.html#15">[ thread ]</a>
+              <a href="subject.html#15">[ subject ]</a>
+              <a href="author.html#15">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/louie-users">More information about the Louie-users
+mailing list</a><br>
+</body></html>

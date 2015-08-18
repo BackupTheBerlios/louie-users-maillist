@@ -1,0 +1,110 @@
+From lool at dooz.org  Mon Jun 18 18:22:51 2007
+From: lool at dooz.org (=?iso-8859-1?Q?Lo=EFc?= Minier)
+Date: Mon, 18 Jun 2007 18:22:51 +0200
+Subject: [Louie-users] Tarballs 403 on download
+In-Reply-To: <20070618161453.GA26559@bee.dooz.org>
+References: <20070618161453.GA26559@bee.dooz.org>
+Message-ID: <20070618162251.GA26669@bee.dooz.org>
+
+On Mon, Jun 18, 2007, Lo?c Minier wrote:
+>  I would like to prepare packages of Louie for Debian however the
+>  tarballs at http://louie.berlios.de/dist/ all return a 403 Forbidden
+>  when I try to get them.
+
+ I grabbed a tarball from:
+    http://cheeseshop.python.org/pypi/Louie
+
+ Is the cheeseshop considered the official release place?
+
+-- 
+Lo?c Minier
+
+
+From lool at dooz.org  Mon Jun 18 18:14:53 2007
+From: lool at dooz.org (=?iso-8859-1?Q?Lo=EFc?= Minier)
+Date: Mon, 18 Jun 2007 18:14:53 +0200
+Subject: [Louie-users] Tarballs 403 on download
+Message-ID: <20070618161453.GA26559@bee.dooz.org>
+
+        Hi there,
+
+ I would like to prepare packages of Louie for Debian however the
+ tarballs at http://louie.berlios.de/dist/ all return a 403 Forbidden
+ when I try to get them.
+
+ Would someone be so kind to fix the permissions on the tarballs or
+ point me at the correct URL?
+
+   Thanks!
+-- 
+Lo?c Minier
+
+
+From pobrien at orbtech.com  Mon Jun 18 18:47:15 2007
+From: pobrien at orbtech.com (Patrick K. O'Brien)
+Date: Mon, 18 Jun 2007 11:47:15 -0500
+Subject: [Louie-users] Tarballs 403 on download
+In-Reply-To: <20070618162251.GA26669@bee.dooz.org>
+References: <20070618161453.GA26559@bee.dooz.org>
+	<20070618162251.GA26669@bee.dooz.org>
+Message-ID: <FF2C91A9-7007-4772-BDAC-275F2FC69AA5@orbtech.com>
+
+On Jun 18, 2007, at 11:22 AM, Lo?c Minier wrote:
+
+> On Mon, Jun 18, 2007, Lo?c Minier wrote:
+>>  I would like to prepare packages of Louie for Debian however the
+>>  tarballs at http://louie.berlios.de/dist/ all return a 403 Forbidden
+>>  when I try to get them.
+>
+>  I grabbed a tarball from:
+>     http://cheeseshop.python.org/pypi/Louie
+>
+>  Is the cheeseshop considered the official release place?
+
+Yes.
+
+-- 
+Patrick K. O'Brien
+Orbtech    http://www.orbtech.com
+Schevo     http://www.schevo.org
+
+
+
+
+From wbaxter at gmail.com  Tue Jun 19 08:57:42 2007
+From: wbaxter at gmail.com (Bill Baxter)
+Date: Tue, 19 Jun 2007 15:57:42 +0900
+Subject: [Louie-users] Objectifying dispatcher
+Message-ID: <e86a5fd00706182357v48ce813dvc7d57f636bcaebf3@mail.gmail.com>
+
+Someone on the wx.Python list recently pointed me to Louie -- I've taken a
+closer look at it now and the one thing that kind of bothers me is that it
+uses a central global dispatcher.  The thing I was looking for was an
+alternative to wx.lib.pubsub that doesn't pull in all of wx as a
+dependency.  But in some ways wx.lib.pubsub makes more sense to me.  There a
+publisher talks directly to a subscriber without a middle man.  If you want
+A to signal B, A creates a Publisher, and B can connect to A's Publisher.
+Of course if you want to make a big global publisher and have everyone use
+it, you can do that too.  Louie seems to force the "big global publisher"
+paradigm on you.
+
+The stuff in louie.dispatcher is fairly compact, and looks like it could
+easily be encapsulated in a class if one wanted to.  I think all you need is
+to make these globals non-global:
+  connections = {}
+  senders = {}
+  senders_back = {}
+  plugins = []
+and put them in a Dispatcher class.  Is there any reason not to have such a
+class?  louie.dispatcher could still have the module level functions, they
+would just use an on-demand instantiated module-level instance of
+Dispatcher.
+
+Or maybe someone can convince me that my concerns are unfounded and I should
+just go with the one big happy global dispatcher.
+
+--bb
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <https://lists.berlios.de/pipermail/louie-users/attachments/20070619/dffd4d0c/attachment.html>
+

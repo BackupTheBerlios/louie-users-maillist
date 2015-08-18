@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Louie-users] Some questions on louie
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/louie-users/2006-March/index.html" >
+   <LINK REL="made" HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20%5BLouie-users%5D%20Some%20questions%20on%20louie&In-Reply-To=%3C4422F28B.3000600%40orbtech.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000008.html">
+   <LINK REL="Next"  HREF="000010.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Louie-users] Some questions on louie</H1>
+    <B>Patrick K. O'Brien</B> 
+    <A HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20%5BLouie-users%5D%20Some%20questions%20on%20louie&In-Reply-To=%3C4422F28B.3000600%40orbtech.com%3E"
+       TITLE="[Louie-users] Some questions on louie">pobrien at orbtech.com
+       </A><BR>
+    <I>Thu Mar 23 20:10:03 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000008.html">[Louie-users] Some questions on louie
+</A></li>
+        <LI>Next message: <A HREF="000010.html">[Louie-users] Some questions on louie
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#9">[ date ]</a>
+              <a href="thread.html#9">[ thread ]</a>
+              <a href="subject.html#9">[ subject ]</a>
+              <a href="author.html#9">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Michael Twomey wrote:
+&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i> First of thanks for creating louie, it's proven to be a drop dead easy
+</I>&gt;<i> mechanism to handle events (I originally tried zope.component but that
+</I>&gt;<i> has a couple of things stopping me from using it, no weakref support
+</I>&gt;<i> and a less flexible means of defining signals and handlers on the
+</I>&gt;<i> fly).
+</I>
+You're very welcome.  Glad you like it.  Sorry it took so long for me to
+reply.
+
+&gt;<i> I just have a couple of minor questions:
+</I>&gt;<i> 
+</I>&gt;<i> * Where did the louie svn go? There is a link to svn on berlios but
+</I>&gt;<i> that seems to have been disabled.
+</I>
+We are in the process of moving from berlios to our own host.  We've
+already moved the svn repository to:
+
+<A HREF="svn://svn.orbtech.com/louie/trunk">svn://svn.orbtech.com/louie/trunk</A>
+
+&gt;<i> * The louie site seems to missing some of the docs that are available
+</I>&gt;<i> in the distribution. It's also missing some basic examples.
+</I>
+Yeah, we are a bit behind on putting all the pieces together.  :-(
+
+&gt;<i> * Did anyone make any progress on handling sub classes or ruledispatch
+</I>&gt;<i> signals? (This kinda leads into my where did the svn go question).
+</I>
+Not yet.  Let me know if you'd like developer access to work on a branch
+for this.
+
+&gt;<i> Also, I've created a modified twisted plugin which uses
+</I>&gt;<i> reactor.callFromThread, which makes louie easy to use from inside
+</I>&gt;<i> threaded calls:
+</I>&gt;<i> 
+</I>&gt;<i> class TwistedCallFromThreadPlugin(louie.Plugin):
+</I>&gt;<i>     &quot;&quot;&quot;A twisted plugin which uses reactor.callFromThread
+</I>&gt;<i> 
+</I>&gt;<i>     This ensures thread safety, but it does mean that dispatch calls in louie
+</I>&gt;<i>     never return anything useful.
+</I>&gt;<i>     &quot;&quot;&quot;
+</I>&gt;<i>     def wrap_receiver(self, receiver):
+</I>&gt;<i>         def wrapper(*args, **kwargs):
+</I>&gt;<i>             reactor.callFromThread(receiver, *args, **kwargs)
+</I>&gt;<i>         return wrapper
+</I>&gt;<i> 
+</I>&gt;<i> This may be of some use to some people. This leads back to the
+</I>&gt;<i> conversation on the  plugins system, I have a definite case where I
+</I>&gt;<i> might want different behaviour depending on the context (e.g. twisted
+</I>&gt;<i> safe deferred call vs a call from a thread).
+</I>
+Thanks for the contribution.  Would you like to take the lead on the
+plugin system?  Anyone else?
+
+-- 
+Patrick K. O'Brien
+Orbtech       <A HREF="http://www.orbtech.com">http://www.orbtech.com</A>
+Schevo        <A HREF="http://www.schevo.org">http://www.schevo.org</A>
+Louie         <A HREF="http://www.pylouie.org">http://www.pylouie.org</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000008.html">[Louie-users] Some questions on louie
+</A></li>
+	<LI>Next message: <A HREF="000010.html">[Louie-users] Some questions on louie
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#9">[ date ]</a>
+              <a href="thread.html#9">[ thread ]</a>
+              <a href="subject.html#9">[ subject ]</a>
+              <a href="author.html#9">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/louie-users">More information about the Louie-users
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,65 @@
+From mscott at springfieldtech.com  Wed Aug  1 19:37:40 2007
+From: mscott at springfieldtech.com (Matthew Scott)
+Date: Wed, 1 Aug 2007 12:37:40 -0500
+Subject: [Louie-users] Objectifying dispatcher
+In-Reply-To: <e86a5fd00706182357v48ce813dvc7d57f636bcaebf3@mail.gmail.com>
+References: <e86a5fd00706182357v48ce813dvc7d57f636bcaebf3@mail.gmail.com>
+Message-ID: <e4f768c0708011037n24a03b27k6d200c6f529988f8@mail.gmail.com>
+
+Sorry for the late reply.
+
+On 6/19/07, Bill Baxter <wbaxter at gmail.com> wrote:
+> Someone on the wx.Python list recently pointed me to Louie -- I've taken a
+> closer look at it now and the one thing that kind of bothers me is that it
+> uses a central global dispatcher.
+
+I can understand why that may concern you.
+
+
+> The thing I was looking for was an
+> alternative to wx.lib.pubsub that doesn't pull in all of wx as a dependency.
+>  But in some ways wx.lib.pubsub makes more sense to me.  There a publisher
+> talks directly to a subscriber without a middle man.  If you want A to
+> signal B, A creates a Publisher, and B can connect to A's Publisher.  Of
+> course if you want to make a big global publisher and have everyone use it,
+> you can do that too.  Louie seems to force the "big global publisher"
+> paradigm on you.
+
+Remember, Louie is ultimately based on
+http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056
+and is basically a fancy + bug-fixed version of that recipe.
+
+Schevo has in the past used Louie for event dispatching for
+auto-updated PyQt GUIs, but I don't know of other uses in the wild
+(yet).
+
+
+>
+> The stuff in louie.dispatcher is fairly compact, and looks like it could
+> easily be encapsulated in a class if one wanted to.  I think all you need is
+> to make these globals non-global:
+>   connections = {}
+>   senders = {}
+>   senders_back = {}
+>   plugins = []
+> and put them in a Dispatcher class.  Is there any reason not to have such a
+> class?  louie.dispatcher could still have the module level functions, they
+> would just use an on-demand instantiated module-level instance of
+> Dispatcher.
+
++1 for that -- then you get the best of both worlds.  If you post a
+patch here we would be glad to review it and merge it in.
+
+
+> Or maybe someone can convince me that my concerns are unfounded and I should
+> just go with the one big happy global dispatcher.
+
+Questions: How many dispatchers do you envision using?  What makes it
+a necessity to segregate them?
+
+
+-- 
+Matthew R. Scott
+If my mail is terse, see http://five.sentenc.es/
+
+

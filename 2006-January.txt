@@ -1,0 +1,27 @@
+From mscott at goldenspud.com  Mon Jan 30 20:58:51 2006
+From: mscott at goldenspud.com (mscott at goldenspud.com)
+Date: Mon, 30 Jan 2006 13:58:51 -0600 (CST)
+Subject: [Louie-users] ANN: Louie-1.1 - Signal dispatching mechanism
+Message-ID: <20060130195851.CEDE6313DBE@localhost.localdomain>
+
+Louie 1.1 is available:
+
+<http://cheeseshop.python.org/pypi/Louie>
+
+Louie provides Python programmers with a straightforward way to
+dispatch signals between objects in a wide variety of contexts. It is
+based on PyDispatcher_, which in turn was based on a highly-rated
+recipe_ in the Python Cookbook.
+
+.. _PyDispatcher: http://pydispatcher.sf.net/
+
+.. _recipe: http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/87056
+
+
+For more information, visit the Louie project site:
+<http://louie.berlios.de/>
+
+Patrick K. O'Brien and contributors
+<louie-users at lists.berlios.de>
+
+

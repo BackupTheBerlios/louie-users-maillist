@@ -1,0 +1,181 @@
+From micktwomey at gmail.com  Thu Mar 16 12:15:56 2006
+From: micktwomey at gmail.com (Michael Twomey)
+Date: Thu, 16 Mar 2006 11:15:56 +0000
+Subject: [Louie-users] Some questions on louie
+Message-ID: <50a522ca0603160315s40914676ob3e7abde33e039fa@mail.gmail.com>
+
+Hi,
+
+First of thanks for creating louie, it's proven to be a drop dead easy
+mechanism to handle events (I originally tried zope.component but that
+has a couple of things stopping me from using it, no weakref support
+and a less flexible means of defining signals and handlers on the
+fly).
+
+I just have a couple of minor questions:
+
+* Where did the louie svn go? There is a link to svn on berlios but
+that seems to have been disabled.
+
+* The louie site seems to missing some of the docs that are available
+in the distribution. It's also missing some basic examples.
+
+* Did anyone make any progress on handling sub classes or ruledispatch
+signals? (This kinda leads into my where did the svn go question).
+
+Also, I've created a modified twisted plugin which uses
+reactor.callFromThread, which makes louie easy to use from inside
+threaded calls:
+
+class TwistedCallFromThreadPlugin(louie.Plugin):
+    """A twisted plugin which uses reactor.callFromThread
+
+    This ensures thread safety, but it does mean that dispatch calls in louie
+    never return anything useful.
+    """
+    def wrap_receiver(self, receiver):
+        def wrapper(*args, **kwargs):
+            reactor.callFromThread(receiver, *args, **kwargs)
+        return wrapper
+
+This may be of some use to some people. This leads back to the
+conversation on the  plugins system, I have a definite case where I
+might want different behaviour depending on the context (e.g. twisted
+safe deferred call vs a call from a thread).
+
+cheers,
+  Michael
+
+
+From pobrien at orbtech.com  Thu Mar 23 20:10:03 2006
+From: pobrien at orbtech.com (Patrick K. O'Brien)
+Date: Thu, 23 Mar 2006 13:10:03 -0600
+Subject: [Louie-users] Some questions on louie
+In-Reply-To: <50a522ca0603160315s40914676ob3e7abde33e039fa@mail.gmail.com>
+References: <50a522ca0603160315s40914676ob3e7abde33e039fa@mail.gmail.com>
+Message-ID: <4422F28B.3000600@orbtech.com>
+
+Michael Twomey wrote:
+> Hi,
+> 
+> First of thanks for creating louie, it's proven to be a drop dead easy
+> mechanism to handle events (I originally tried zope.component but that
+> has a couple of things stopping me from using it, no weakref support
+> and a less flexible means of defining signals and handlers on the
+> fly).
+
+You're very welcome.  Glad you like it.  Sorry it took so long for me to
+reply.
+
+> I just have a couple of minor questions:
+> 
+> * Where did the louie svn go? There is a link to svn on berlios but
+> that seems to have been disabled.
+
+We are in the process of moving from berlios to our own host.  We've
+already moved the svn repository to:
+
+svn://svn.orbtech.com/louie/trunk
+
+> * The louie site seems to missing some of the docs that are available
+> in the distribution. It's also missing some basic examples.
+
+Yeah, we are a bit behind on putting all the pieces together.  :-(
+
+> * Did anyone make any progress on handling sub classes or ruledispatch
+> signals? (This kinda leads into my where did the svn go question).
+
+Not yet.  Let me know if you'd like developer access to work on a branch
+for this.
+
+> Also, I've created a modified twisted plugin which uses
+> reactor.callFromThread, which makes louie easy to use from inside
+> threaded calls:
+> 
+> class TwistedCallFromThreadPlugin(louie.Plugin):
+>     """A twisted plugin which uses reactor.callFromThread
+> 
+>     This ensures thread safety, but it does mean that dispatch calls in louie
+>     never return anything useful.
+>     """
+>     def wrap_receiver(self, receiver):
+>         def wrapper(*args, **kwargs):
+>             reactor.callFromThread(receiver, *args, **kwargs)
+>         return wrapper
+> 
+> This may be of some use to some people. This leads back to the
+> conversation on the  plugins system, I have a definite case where I
+> might want different behaviour depending on the context (e.g. twisted
+> safe deferred call vs a call from a thread).
+
+Thanks for the contribution.  Would you like to take the lead on the
+plugin system?  Anyone else?
+
+-- 
+Patrick K. O'Brien
+Orbtech       http://www.orbtech.com
+Schevo        http://www.schevo.org
+Louie         http://www.pylouie.org
+
+
+
+From micktwomey at gmail.com  Fri Mar 24 13:55:51 2006
+From: micktwomey at gmail.com (Michael Twomey)
+Date: Fri, 24 Mar 2006 12:55:51 +0000
+Subject: [Louie-users] Some questions on louie
+In-Reply-To: <4422F28B.3000600@orbtech.com>
+References: <50a522ca0603160315s40914676ob3e7abde33e039fa@mail.gmail.com>
+	 <4422F28B.3000600@orbtech.com>
+Message-ID: <50a522ca0603240455g709b05f9he8a2ad209fd5c097@mail.gmail.com>
+
+On 3/23/06, Patrick K. O'Brien <pobrien at orbtech.com> wrote:
+>
+> You're very welcome.  Glad you like it.  Sorry it took so long for me to
+> reply.
+>
+
+No problem.
+
+> We are in the process of moving from berlios to our own host.  We've
+> already moved the svn repository to:
+>
+> svn://svn.orbtech.com/louie/trunk
+>
+
+Thanks, this works for me.
+
+> > * The louie site seems to missing some of the docs that are available
+> > in the distribution. It's also missing some basic examples.
+>
+> Yeah, we are a bit behind on putting all the pieces together.  :-(
+>
+
+I'm seeing the docs in svn so you seem to have a lot of this done.
+
+> > * Did anyone make any progress on handling sub classes or ruledispatch
+> > signals? (This kinda leads into my where did the svn go question).
+>
+> Not yet.  Let me know if you'd like developer access to work on a branch
+> for this.
+>
+
+Not at the moment, I'm in the middle of a refactor so I can't think
+anything else right now :) However, the refactor does involve louie so
+I might have a few more ideas on this when I'm done.
+
+I would like to have a stab at an experimental ruledispatch branch
+just to see what that would look like. I don't know when I'd get time
+to try that though.
+
+> Thanks for the contribution.  Would you like to take the lead on the
+> plugin system?  Anyone else?
+>
+
+At the moment I'm not hurting as much as I thought I would be with the
+plugins, so I don't have any strong opinions on plugin design right
+now.
+
+cheers,
+  Michael
+
+

@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Louie-users] on the plugins system...
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/louie-users/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20%5BLouie-users%5D%20on%20the%20plugins%20system...&In-Reply-To=%3C43E82088.1010507%40colorstudy.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000001.html">
+   <LINK REL="Next"  HREF="000003.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Louie-users] on the plugins system...</H1>
+    <B>Ian Bicking</B> 
+    <A HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20%5BLouie-users%5D%20on%20the%20plugins%20system...&In-Reply-To=%3C43E82088.1010507%40colorstudy.com%3E"
+       TITLE="[Louie-users] on the plugins system...">ianb at colorstudy.com
+       </A><BR>
+    <I>Tue Feb  7 05:22:32 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000001.html">[Louie-users] on the plugins system...
+</A></li>
+        <LI>Next message: <A HREF="000003.html">[Louie-users] PyDispatcher, subclassing, etc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Funny there should be an email, I was just going to write an email. 
+About something entirely different, though.  But I still have an opinion...
+
+Jim McCoy wrote:
+&gt;<i> To recap for those who might be scanning the list archives, the plugin 
+</I>&gt;<i> system prior to 1.1 had a minor problem in that if you called 
+</I>&gt;<i> install_plugin multiple times the nested method weakrefs would croak.  
+</I>&gt;<i> There was a fix in 1.1 and perhaps a tweak in 1.2 (I am not sure about 
+</I>&gt;<i> the last bit) and current behavior seems to be that if you call 
+</I>&gt;<i> install_plugin multiple times you will get a PluginTypeError.
+</I>&gt;<i> 
+</I>&gt;<i> I am not sure I necessarily agree about raising an exception for 
+</I>&gt;<i> multiple calls to install_plugin but I can see the logic behind the 
+</I>&gt;<i> choice and it is easy enough to wrap the call to install_plugin in a 
+</I>&gt;<i> try/except clause.  While I was thinking about the reasoning behind the 
+</I>&gt;<i> exception I started to consider the plugin issue a bit more and realized 
+</I>&gt;<i> that there was an interesting set of wierdnesses lurking beneath the 
+</I>&gt;<i> surface.  For someone who controls their app from top to bottom things 
+</I>&gt;<i> are fairly clear on what to do, but what about the case where the coder 
+</I>&gt;<i> is responding to signals from another module/framework?
+</I>&gt;<i> 
+</I>&gt;<i> If I install, for example, the twisted plugin then the returns from my 
+</I>&gt;<i> signal sends will be deferreds.  Simple enough. The wierdness arises if 
+</I>&gt;<i> I am using louie in my app, I do not have the twisted plugin installed, 
+</I>&gt;<i> and I import a package that also uses louie but which installs the 
+</I>&gt;<i> twisted plugin.  Suddenly my signals that are passing around 
+</I>&gt;<i> independantly of this other package start returning deferreds...
+</I>
+That would be horrible.  That would break synchronous code running in 
+Twisted in a thread.  Return values should never change like that.
+
+&gt;<i> I guess what I am leading towards is the question of whether or not the 
+</I>&gt;<i> sender of the signal should define how that send() call returns rather 
+</I>&gt;<i> than a global value (e.g. the list of installed plugins) so that no one 
+</I>&gt;<i> gets caught unaware when processing the results of a louie.send()?  
+</I>&gt;<i> Perhaps installing a plugin should just make a 
+</I>&gt;<i> send_with_deferred_return() available rather than forcing the wrapper on 
+</I>&gt;<i> all calls?
+</I>
+That seems much more reasonable.
+
+-- 
+Ian Bicking  |  <A HREF="https://lists.berlios.de/mailman/listinfo/louie-users">ianb at colorstudy.com</A>  |  <A HREF="http://blog.ianbicking.org">http://blog.ianbicking.org</A>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000001.html">[Louie-users] on the plugins system...
+</A></li>
+	<LI>Next message: <A HREF="000003.html">[Louie-users] PyDispatcher, subclassing, etc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/louie-users">More information about the Louie-users
+mailing list</a><br>
+</body></html>

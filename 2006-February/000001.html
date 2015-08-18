@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Louie-users] on the plugins system...
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/louie-users/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20%5BLouie-users%5D%20on%20the%20plugins%20system...&In-Reply-To=%3Cf01e36880602061332y1c3d771ewee2dacce66945a03%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000002.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Louie-users] on the plugins system...</H1>
+    <B>Jim McCoy</B> 
+    <A HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20%5BLouie-users%5D%20on%20the%20plugins%20system...&In-Reply-To=%3Cf01e36880602061332y1c3d771ewee2dacce66945a03%40mail.gmail.com%3E"
+       TITLE="[Louie-users] on the plugins system...">jim.mccoy at gmail.com
+       </A><BR>
+    <I>Mon Feb  6 22:32:31 CET 2006</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000002.html">[Louie-users] on the plugins system...
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1">[ date ]</a>
+              <a href="thread.html#1">[ thread ]</a>
+              <a href="subject.html#1">[ subject ]</a>
+              <a href="author.html#1">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>To recap for those who might be scanning the list archives, the plugin
+system prior to 1.1 had a minor problem in that if you called install_plugin
+multiple times the nested method weakrefs would croak.  There was a fix in
+1.1 and perhaps a tweak in 1.2 (I am not sure about the last bit) and
+current behavior seems to be that if you call install_plugin multiple times
+you will get a PluginTypeError.
+
+I am not sure I necessarily agree about raising an exception for multiple
+calls to install_plugin but I can see the logic behind the choice and it is
+easy enough to wrap the call to install_plugin in a try/except clause.
+While I was thinking about the reasoning behind the exception I started to
+consider the plugin issue a bit more and realized that there was an
+interesting set of wierdnesses lurking beneath the surface.  For someone who
+controls their app from top to bottom things are fairly clear on what to do,
+but what about the case where the coder is responding to signals from
+another module/framework?
+
+If I install, for example, the twisted plugin then the returns from my
+signal sends will be deferreds.  Simple enough. The wierdness arises if I am
+using louie in my app, I do not have the twisted plugin installed, and I
+import a package that also uses louie but which installs the twisted
+plugin.  Suddenly my signals that are passing around independantly of this
+other package start returning deferreds...
+
+I guess what I am leading towards is the question of whether or not the
+sender of the signal should define how that send() call returns rather than
+a global value (e.g. the list of installed plugins) so that no one gets
+caught unaware when processing the results of a louie.send()?  Perhaps
+installing a plugin should just make a send_with_deferred_return() available
+rather than forcing the wrapper on all calls?
+
+Regards,
+
+Jim
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/louie-users/attachments/20060206/16bcab7e/attachment.html">https://lists.berlios.de/pipermail/louie-users/attachments/20060206/16bcab7e/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000002.html">[Louie-users] on the plugins system...
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1">[ date ]</a>
+              <a href="thread.html#1">[ thread ]</a>
+              <a href="subject.html#1">[ subject ]</a>
+              <a href="author.html#1">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/louie-users">More information about the Louie-users
+mailing list</a><br>
+</body></html>

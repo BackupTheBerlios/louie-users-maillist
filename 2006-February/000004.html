@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Fwd: [Louie-users] PyDispatcher, subclassing, etc
+   </TITLE>
+   <LINK REL="Index" HREF="http://lists.berlios.de/pipermail/louie-users/2006-February/index.html" >
+   <LINK REL="made" HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20Fwd%3A%20%5BLouie-users%5D%20PyDispatcher%2C%20subclassing%2C%20etc&In-Reply-To=%3Cf01e36880602062151x7b09c53cv208713b51af9f8cc%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000006.html">
+   <LINK REL="Next"  HREF="000005.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Fwd: [Louie-users] PyDispatcher, subclassing, etc</H1>
+    <B>Jim McCoy</B> 
+    <A HREF="mailto:louie-users%40lists.berlios.de?Subject=Re%3A%20Fwd%3A%20%5BLouie-users%5D%20PyDispatcher%2C%20subclassing%2C%20etc&In-Reply-To=%3Cf01e36880602062151x7b09c53cv208713b51af9f8cc%40mail.gmail.com%3E"
+       TITLE="Fwd: [Louie-users] PyDispatcher, subclassing, etc">jim.mccoy at gmail.com
+       </A><BR>
+    <I>Tue Feb  7 06:51:41 CET 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000006.html">[Louie-users] PyDispatcher, subclassing, etc
+</A></li>
+        <LI>Next message: <A HREF="000005.html">Fwd: [Louie-users] PyDispatcher, subclassing, etc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#4">[ date ]</a>
+              <a href="thread.html#4">[ thread ]</a>
+              <a href="subject.html#4">[ subject ]</a>
+              <a href="author.html#4">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Forgot to send this to louie-users as well...
+
+---------- Forwarded message ----------
+From: Jim McCoy &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/louie-users">jim.mccoy at gmail.com</A>&gt;
+Date: Feb 6, 2006 9:42 PM
+Subject: Re: [Louie-users] PyDispatcher, subclassing, etc
+To: Ian Bicking &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/louie-users">ianb at colorstudy.com</A>&gt;
+
+
+
+On 2/6/06, Ian Bicking &lt;<A HREF="https://lists.berlios.de/mailman/listinfo/louie-users">ianb at colorstudy.com</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> So... it's unclear to me, but what exactly is the reason for Louie in
+</I>&gt;<i> comparison to PyDispatcher?
+</I>
+
+I can't speak for the authors, but I think one of the reasons was the name
+conflict between pydispatcher (which wanted to use the dispatch name) and
+pje's ruledispatch (which used the same name.)  Other than that I think it
+is mostly pydispatch with a few fixes and some preliminary wrappers for
+interfacing better with other event loops.
+
+The other thing, a while back I asked about how to listen to signals on
+&gt;<i> classes, and inherit those in subclasses:
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://sourceforge.net/mailarchive/forum.php?thread_id=8383303&amp;forum_id=34020">http://sourceforge.net/mailarchive/forum.php?thread_id=8383303&amp;forum_id=34020</A>
+</I>&gt;<i>
+</I>&gt;<i> Quick summary: I want to listen for signals from class A, and then when
+</I>&gt;<i> class B inherits from A, I want that listener to automatically listen
+</I>&gt;<i> for signals from B as well.
+</I>&gt;<i> [...]
+</I>&gt;<i>
+</I>&gt;<i> (There's also a suggestion of using generic functions as a form of event
+</I>&gt;<i> handling, but I'll admit that still scares me a little)
+</I>
+
+As I was reading this I started thinking that ruledispatch would almost be
+tailor-made for such a problem, but now we run into the problem that people
+would try to drop louie in where they had been using pydispatch and the
+swtich on the module that claims the &quot;dispatch&quot; name would change on them
+and lead to all sorts of interesting exceptions and syntax errors :)
+
+Aside from this particular issue it does seem that ruledispatch and the
+generics wrappers seem somewhat ideal.  Efficient type and class/subclass
+checking, multiple triggers, and even the ability to set the signal dispatch
+based on some simple expression criteria in the connect() call.
+
+I have been looking for an excuse to play around with python generics, maybe
+this is the excuse I need...
+
+Jim
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="https://lists.berlios.de/pipermail/louie-users/attachments/20060206/bbc31baa/attachment.html">https://lists.berlios.de/pipermail/louie-users/attachments/20060206/bbc31baa/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000006.html">[Louie-users] PyDispatcher, subclassing, etc
+</A></li>
+	<LI>Next message: <A HREF="000005.html">Fwd: [Louie-users] PyDispatcher, subclassing, etc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#4">[ date ]</a>
+              <a href="thread.html#4">[ thread ]</a>
+              <a href="subject.html#4">[ subject ]</a>
+              <a href="author.html#4">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="https://lists.berlios.de/mailman/listinfo/louie-users">More information about the Louie-users
+mailing list</a><br>
+</body></html>
